@@ -779,6 +779,19 @@ LocalHints =
           false # This is not a false positive.
         element
 
+    # Only allow element which is actually clickable by testing if the mouse will actually hit it.
+    visibleElements = visibleElements.filter (element) ->
+      rect = element.rect
+      points = [
+        [0.5, 0.5],
+        [0.2, 0.2], [0.8, 0.2], [0.2, 0.8], [0.8, 0.8],
+      ].map(([fx, fy]) -> [rect.left + rect.width * fx, rect.top + rect.height * fy])
+      for [x, y] in points
+        elementFromPoint = document.elementFromPoint(x, y)
+        if elementFromPoint && elementFromPoint.contains(element.element)
+          return true
+      return false
+
     # TODO(mrmr1993): Consider z-index. z-index affects behaviour as follows:
     #  * The document has a local stacking context.
     #  * An element with z-index specified
